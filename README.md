@@ -1,4 +1,4 @@
-# greenlight
+# green light
 
 ### Running the app
 ```
