@@ -32,6 +32,9 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
+	// using anonymous structs
+	// struct fields have to be exported
+	// that is required by go's standard library package `reflect`
 	var input struct {
 		Title   string   `json"title"`
 		Year    int32    `json"year"`
