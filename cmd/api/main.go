@@ -22,16 +22,15 @@ type application struct {
 }
 
 func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-
 	err := app.writeJSON(w, http.StatusOK, envelope{
 		"status":      "available",
 		"environment": app.config.env,
 		"version":     version,
 	}, nil)
+
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
-
 }
 
 func main() {

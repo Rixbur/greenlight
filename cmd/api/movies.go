@@ -42,6 +42,9 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Genres  []string `json"genres`
 	}
 
+	// Any JSON key/value pair which cannot be successfully assigned
+	// to the corresponding field in the input struct will be silently ignored.
+	// there is no need to close r.Body, it is done by the http server
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
 		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
