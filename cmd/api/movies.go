@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,7 +18,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	movie := data.Movies{
 		ID:        id,
 		CreatedAt: time.Now(),
-		Title:     "Casablance",
+		Title:     "Casablanca",
 		Runtime:   102,
 		Genres:    []string{"drama", "romance", "war"},
 		Version:   1,
@@ -45,9 +44,9 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	// Any JSON key/value pair which cannot be successfully assigned
 	// to the corresponding field in the input struct will be silently ignored.
 	// there is no need to close r.Body, it is done by the http server
-	err := json.NewDecoder(r.Body).Decode(&input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
-		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		app.badRequestResponse(w, r, err)
 		return
 	}
 

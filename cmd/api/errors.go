@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) logError(r *http.Request, err error) {
+func (app *application) logError(_ *http.Request, err error) {
 	app.logger.Print(err)
 }
 
@@ -17,6 +17,10 @@ func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, st
 		app.logError(r, err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+	app.errorResponse(w, r, http.StatusBadRequest, err.Error())
 }
 
 func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
