@@ -50,7 +50,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	err := json.NewDecoder(r.Body).Decode(dst)
+	err := dec.Decode(dst)
 	if err != nil {
 		var syntaxError *json.SyntaxError
 		var unmarshalTypeError *json.UnmarshalTypeError
