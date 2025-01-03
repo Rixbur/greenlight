@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -55,6 +56,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 		var syntaxError *json.SyntaxError
 		var unmarshalTypeError *json.UnmarshalTypeError
 		var invalidUnmarshalError *json.InvalidUnmarshalError
+		var maxBytesError *http.MaxBytesError
 
 		switch {
 		// JSON is incorrect
@@ -73,12 +75,23 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 		case errors.Is(err, io.EOF):
 			return errors.New("body must not be empty")
 
+		case strings.HasPrefix(err.Error(), "json: unknown field "):
+			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
+			return fmt.Errorf("body contains unknown key %s", fieldName)
+
+		case errors.As(err, &maxBytesError):
+			return fmt.Errorf("body must not be larger than %d bytes", maxBytesError.Limit)
 		// invalidUnmarshalError usually occurs when we pass non-nil pointer
 		case errors.As(err, &invalidUnmarshalError):
 			panic(err)
 		default:
 			return err
 		}
+	}
+
+	err = dec.Decode(&struct{}{})
+	if err != io.EOF {
+		return errors.New("body must only contain a single JSON value")
 	}
 
 	return nil
